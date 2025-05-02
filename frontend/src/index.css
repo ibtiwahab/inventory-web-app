@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.input {
+    @apply block w-full border p-2 mb-2 rounded;
+  }
+  .btn {
+    @apply px-3 py-1 bg-blue-500 text-white rounded;
+  }
+  .btn-danger {
+    @apply px-3 py-1 bg-red-500 text-white rounded;
+  }
+  .btn-primary {
+    @apply px-4 py-2 bg-green-600 text-white rounded;
+  }
+  

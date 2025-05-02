@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  username String @unique
+  password String
+  role     Role   @default(admin)
+
+  // 👇 Back-relations
+  createdOrders  Order[] @relation("OrderCreator")
+  approvedOrders Order[] @relation("OrderApprover")
+}
+
+model Product {
+  id            Int      @id @default(autoincrement())
+  name          String
+  description   String?
+  quantity      Int      @default(0)
+  price         Float
+  lowStockAlert Int      @default(5)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // 👇 Back-relation to OrderProduct
+  orders OrderProduct[]
+}
+
+model OrderProduct {
+  id        Int     @id @default(autoincrement())
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId Int
+  quantity  Int
+}
+
+model Order {
+  id           Int         @id @default(autoincrement())
+  createdBy    User        @relation("OrderCreator", fields: [createdById], references: [id])
+  createdById  Int
+  approvedBy   User?       @relation("OrderApprover", fields: [approvedById], references: [id])
+  approvedById Int?
+  status       OrderStatus @default(PENDING)
+  createdAt    DateTime    @default(now())
+
+  // 👇 Back-relation to OrderProduct
+  products OrderProduct[]
+}
+
+enum Role {
+  superadmin
+  admin
+}
+
+enum OrderStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
